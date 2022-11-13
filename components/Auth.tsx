@@ -13,6 +13,7 @@ export const Auth: FC = () => {
     registerMutation,
   } = useMutateAuth()
   const handleSubmit = (e: FormEvent) => {
+    e.preventDefault()
     if (isLogin) {
       loginMutation.mutate()
     } else {
