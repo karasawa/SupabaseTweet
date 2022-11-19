@@ -1,6 +1,5 @@
-import useStore from '../store'
 import { supabase } from '../utils/supabase'
-import { Profile, EditedProfile } from '../types'
+import { Profile } from '../types'
 import { useMutation, useQueryClient } from 'react-query'
 
 export const useMutateProfile = () => {
@@ -20,5 +19,23 @@ export const useMutateProfile = () => {
       },
     }
   )
-  return {}
+  const updateProfileMutation = useMutation(
+    async (profile: Omit<Profile, 'created_at' | 'updated_at'>) => {
+      const { data, error } = await supabase
+        .from('profile')
+        .update(profile)
+        .eq('id', profile.id)
+      if (error) throw new Error(error.message)
+      return data
+    },
+    {
+      onSuccess: (res) => {
+        queryClient.setQueryData(['profile'], res[0])
+      },
+      onError: (err: any) => {
+        alert(err.message)
+      },
+    }
+  )
+  return { createProfileMutation, updateProfileMutation }
 }
